@@ -2,37 +2,42 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"net/url"
 	"strings"
+
+	"golang.org/x/net/proxy"
 )
 
 func main() {
-	listener, err := net.Listen("tcp", "127.0.0.1:8900")
-	defer listener.Close()
 
+	host := flag.String("h", "127.0.0.1:8900", "http代理监听的ip地址")
+	socksAddr := flag.String("s", "127.0.0.1:1080", "socks的连接ip和端口")
+	flag.Parse()
+
+	proxy, err := net.Listen("tcp", *host)
+	defer proxy.Close()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
-
-	log.Println("server start:127.0.0.1:8900")
 
 	for {
-		cli, err := listener.Accept()
-		defer cli.Close()
-
+		client, err := proxy.Accept()
 		if err != nil {
-			log.Fatal(err)
-			break
+			log.Println(err)
 		}
-		go handleClientConn(cli)
+
+		go handleHTTPProxy(client, *socksAddr)
 	}
+
 }
 
-func handleClientConn(cli net.Conn) {
+func handleHTTPProxy(cli net.Conn, socksAddr string) {
+	defer cli.Close()
 	var b [1024]byte
 
 	n, err := cli.Read(b[:])
@@ -63,7 +68,14 @@ func handleClientConn(cli net.Conn) {
 		}
 	}
 
-	target, err := net.Dial("tcp", address)
+	dialer, err := proxy.SOCKS5("tcp", socksAddr, nil, nil) //开启socks5连接
+
+	if err != nil {
+		log.Printf("socks5连接出错%v", err)
+		return
+	}
+	target, err := dialer.Dial("tcp", address) // socks5对请求进行拨号
+	defer target.Close()
 	if err != nil {
 		log.Fatal(err)
 		return
