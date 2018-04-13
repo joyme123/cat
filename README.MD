@@ -1,6 +1,7 @@
 # cat
 
-sock5代理转http代理，可用于linux控制台下。
+sock5代理转http代理，可用于linux环境。
+windows需自己手动编译源代码
 
 使用方式
 
