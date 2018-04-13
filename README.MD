@@ -25,3 +25,9 @@ sock5代理转http代理，可用于linux控制台下。
 export http_proxy=127.0.0.1:8989
 export https_proxy=127.0.0.1:8989
 ```
+## pac文件
+
+程序默认加载的pac文件路径是/etc/cat/pac.txt
+可以通过-c来指定pac地址
+
+pac文件中的url每行代表一个，可以写成正则表达式。比如为了支持google.com的所有域名。可以写成(.*)google.com
