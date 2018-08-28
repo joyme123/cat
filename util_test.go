@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestIsInPac(t *testing.T) {
-	list := parsePac("/home/jiang/projects/cat/pac.txt")
+	list := parsePac("/home/jiang/projects/cat_proxy/pac.txt")
 	if !isInPac("google.com", list) {
 		t.Error("google.com is in pac")
 	}

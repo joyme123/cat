@@ -32,3 +32,9 @@ export https_proxy=127.0.0.1:8989
 可以通过-c来指定pac地址
 
 pac文件中的url每行代表一个，可以写成正则表达式。比如为了支持google.com的所有域名。可以写成(.*)google.com
+
+# 编译
+
+```
+go build .
+```
